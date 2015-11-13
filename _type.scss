@@ -1,0 +1,103 @@
+// Note: in practice, we generally kept these maps with our other specs/variables, but here they are for context:
+// 
+
+// TYPOGRAPHY
+// ----------
+// Note: this worked on our project; name things whatever makes sense for yours.
+// And comment all the things! Code is never as self-documenting as it feels when you write it.
+// (These are trimmed, but representative of the actual notes in our file.)
+// -------
+// XL is for high-priority elements
+// L is for modules that, at large views, span > half the page
+// M is for modules that span between 1/4 and 1/2 the page at large views
+// S is for anything below that
+// LAST UPDATED - 10/2 (sprint 13)
+// each line is set up as "size key: font-size (in px) line-height (in px)"
+
+$headings: (
+	xl: 52 53,
+	l: 36 40,
+	m: 26 30,
+	s: 22 28
+);
+ 
+
+$copy: (
+	xl: 18 30,
+	l: 18 30,
+	m: 16 26,
+	s: 16 26
+);
+
+
+
+// A few handy functions for getting font vars, 
+// plus a mixin for doing both at once:
+// --------
+// type-size() - get the appropriate font size for a context
+// NOTE: the returned values all come from _global-spec.scss
+// -----
+// font-size: type-size($copy, s); 
+@function type-size($role: $copy, $size: 'm', $absolute: false) {
+	$map: $role;
+	$text-size: nth(map-get($map, $size), 1);
+
+	@if( $absolute ) { 
+		@return $text-size; 
+	}
+	@else { 
+		@return $text-size*1px; 
+	}
+}
+
+
+// type-height() - get the appropriate line-height for a context
+// NOTE: the returned values all come from _global-spec.scss
+// defaults to returning a relative value (ie 1.5) 
+// if you need it in absolute pixels, set the 'relative' param to false
+// -----
+// line-height: type-height($copy, s);             #### line-height: 1.57;
+// line-height: type-height($copy, s, false);      #### line-height: 22px;
+@function type-height($role: $copy, $size: 'm', $relative: true) {
+	$map: $role;
+	$line-height: nth(map-get($map, $size), 2);
+	
+	@if( $relative ) {
+		$line-height: ($line-height / nth(map-get($map, $size), 1));
+	}
+	@else {
+		$line-height: $line-height*1px;
+	}
+	@return $line-height;
+}
+
+
+// @mixin type-set
+// a shortcut for using type-size and type-height together
+// - use only as needed, avoid duplicated css by leaning on text-* classes in markup instead
+// -----
+// .e { @include type-set($copy, s); } ==> .e { font-size: 14px; line-height: 1.57; }
+@mixin type-set($role: $copy, $size: 'm', $relative: true) {
+	font-size: type-size($role, $size);
+	line-height: type-height($role, $size, $relative);
+}
+
+
+
+// Sometimes it makes the most sense to create some utility classes that you can drop in as needed
+// (This was really handy for our project, which was very modular and had a cms and a lot of things to account for.
+// You can sub in your selectors of choice for .headline and .description. 
+// and it goes a little somethin' like this
+$sizes: xl, l, m, s; // you could also do map-keys($copy), same result
+
+
+@each $size in $sizes {
+    .text-#{$size} {
+        .headline {
+            @include type-set($headings, $size);
+        }
+        .description {
+           @include type-set($copy, $size);
+        }
+    }
+};
