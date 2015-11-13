@@ -1,0 +1,71 @@
+// convert px to ems - this is probably the first mixin i put in every project's sass.
+@function em($context, $base:16px) {
+	@return ( $context/$base )*1em;
+}
+
+
+
+// visually-hidden but accessible content
+// Won't take up space or appear on screen, but stays machine-readable (for screenreaders, etc)
+.visually-hidden {
+	position: absolute !important;
+	overflow: hidden;
+	clip: rect(1px, 1px, 1px, 1px);
+	height: 1px;
+	width: 1px;
+	margin: -1px;
+	padding: 0;
+	border: 0;
+}
+
+
+// display text in ALL CAPS without altering the actual content (which can have a11y impacts)
+@mixin all-caps {
+	text-transform: uppercase;
+}
+
+// or, cut down on duplicated css and use it as a utility class
+.-caps { @include all-caps; }
+
+
+
+// tracking($amount)
+// convert a photoshop-style "Tracking" value (aka letterspacing) to a css-supported em value
+// -----
+// letter-spacing: tracking(-20) ==> letter-spacing: -0.02em
+// there's also a mixin version that does the same thing, but includes the property
+@function tracking($amount) {
+	@return ($amount / 1000)*1em;
+}
+
+@mixin tracking($amount) {
+	letter-spacing: tracking($amount);
+}
+
+
+
+/* 
+"alt-state": use where you'd use :hover to make sure keyboard users aren't left out
+includes an option for "no-touch" styles 
+(if you're using modernizr and don't want hover styles to be applied on devices, for example)
+ example:
+ 
+ .styled-button-thingy {
+    color: blue;
+    @include alt-state() { background: blue; color: white; }
+ }
+*/
+@mixin alt-state($no-touch: false) {
+	@if ($no-touch) {
+		.no-touch & {
+			&:hover, &:focus {
+				@content;
+			}
+		}
+	}
+	@else {
+		&:hover, &:focus {
+			@content;
+		}
+	}
+}
