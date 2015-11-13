@@ -1,0 +1,58 @@
+// Icons map
+// When we update our icomoon icon font, instead of dropping in a new stylesheet,
+// we just add the new character(s) to this map.
+// Indented lines are aliases - for icons that might be referred to one way by clients
+// and another by the developers, or represent something more abstract, or whatnot.
+$icons: (
+	briefcase: \e60f,
+		professionals: \e60f,
+	cap: \e610,
+		students: \e610,
+	report: \e61b,
+		chart: \e61b,
+	pdf: \e628,
+	close-overlay: \e627,
+	search: \e60a,
+	[etc etc]
+);
+
+
+
+// This loop actually generates the same styles/classes you'd get straight from icomoon.
+// If you aren't planning to stick those classes in your markup, you can totally just remove this.
+// You could even have it output placeholders (%) instead of classes, theoretically.
+
+@each $name, $content in $icons {
+	.icon-#{$name}:before {
+		content: unicode($content);
+	}
+}
+
+// @function get-icon --- returns the unicode point mapped to the given icon name/class
+// (draws from the $icons map above)
+// why not just @extend .icon-whatever? well, you might be inside a media query, for example.
+// Usage:
+// .special-icon-situation:after { font-family: 'icomoon'; content: get-icon(arrow-down); }
+
+@function get-icon($name) {
+	@if map-has-key($icons, $name) {
+    	$icon-code: map_get($icons, $name);
+    	@return unicode($icon-code);
+    }
+    @else {
+		@warn "No icon stored under that name - make sure to update the $icons map in fonts.scss whenever you add a new icon! \a
+		Current icons: \a
+		#{map_keys($icons)} \a
+		";
+	}
+}
+
+// A shorter way of doing the same - use this if you don't want to/can't explicitly
+// give your element a "icon-whatever" class in the markup
+
+@mixin icon($name) {
+	&:before {
+		font-family: 'icomoon';
+		content: get-icon($name);
+	}
+}
