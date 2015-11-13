@@ -1,0 +1,21 @@
+// For code bits that don't go on *every* project, but have come in handy more than once.
+
+
+// Breakpoint indicator in pseudo-element (display none) on body, 
+// Fun tip: this can be used by JS for checking the current breakpoint/media query,
+// and if you're debugging/developing, you can replace the "display: none"
+// with some visible styling, and give yourself a nice visual reference of what breakpoint you're at.
+// (suggestion: make it position:fixed, stick it in a corner and give it an opaque background for easy viewing)
+
+body:before {
+	display: none;
+	content: 'large';
+
+	@include media($medium){
+		content: 'medium';
+	}
+	
+	@include media($small){
+		content: 'small';
+	}
+}
